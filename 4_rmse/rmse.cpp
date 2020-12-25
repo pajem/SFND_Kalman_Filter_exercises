@@ -52,16 +52,30 @@ VectorXd CalculateRMSE(const vector<VectorXd> &estimations,
   // check the validity of the following inputs:
   //  * the estimation vector size should not be zero
   //  * the estimation vector size should equal ground truth vector size
+  if (estimations.empty() || ground_truth.empty()) {
+    std::cerr << "empty input data to CalculateRMSE() function." << std::endl;
+    return rmse;
+  }
+  if (estimations.size() != ground_truth.size()) {
+    std::cerr << "estimations and ground truth data have different sizes." << std::endl;
+    return rmse;
+  }
 
   // TODO: accumulate squared residuals
+  VectorXd se_sum(4);
+  se_sum << 0,0,0,0;
   for (int i=0; i < estimations.size(); ++i) {
-    // ... your code here
-    
+    VectorXd se = estimations[i] - ground_truth[i];
+    se = se.array() * se.array();
+    se_sum += se;
   }
 
   // TODO: calculate the mean
+  VectorXd se_mean(4);
+  se_mean = se_sum / estimations.size();
 
   // TODO: calculate the squared root
+  rmse = se_mean.array().sqrt();
 
   // return the result
   return rmse;
