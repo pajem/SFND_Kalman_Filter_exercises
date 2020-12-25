@@ -38,8 +38,28 @@ MatrixXd CalculateJacobian(const VectorXd& x_state) {
   // TODO: YOUR CODE HERE 
 
   // check division by zero
+  double p2 = px * px + py * py;
+  double p = std::sqrt(p2);
+  if (p2 <= 0) {
+      std::cerr << "CalculateJacobian() - Error - Division by Zero" << std::endl;
+  }
   
   // compute the Jacobian matrix
+
+  Hj(0, 0) = px / p;
+  Hj(0, 1) = py / p;
+  Hj(0, 2) = 0;
+  Hj(0, 3) = 0;
+
+  Hj(1, 0) = -py / p2;
+  Hj(1, 1) = px / p2;
+  Hj(1, 2) = 0;
+  Hj(1, 3) = 0;
+
+  Hj(2, 0) = py * (vx * py - vy * px) / std::pow(p2, 1.5);
+  Hj(2, 1) = px * (vy * px - vx * py) / std::pow(p2, 1.5);
+  Hj(2, 2) = px / p;
+  Hj(2, 3) = py / p;
 
   return Hj;
 }
