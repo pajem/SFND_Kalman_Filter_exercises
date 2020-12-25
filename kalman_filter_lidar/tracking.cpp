@@ -72,11 +72,27 @@ void Tracking::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   
   // TODO: YOUR CODE HERE
   // 1. Modify the F matrix so that the time is integrated
-  // 2. Set the process covariance matrix Q
+  kf_.F_(0, 2) = dt;
+  kf_.F_(1, 3) = dt;
+  // 2. Set the process covariance matrix 
+  double qx4 = std::pow(dt, 4) / 4 * noise_ax;
+  double qx3 = std::pow(dt, 3) / 2 * noise_ax;
+  double qx2 = std::pow(dt, 2) * noise_ax;
+  double qy4 = std::pow(dt, 4) / 4 * noise_ay;
+  double qy3 = std::pow(dt, 3) / 2 * noise_ay;
+  double qy2 = std::pow(dt, 2) * noise_ay;
+  kf_.Q_ = MatrixXd(4, 4);
+  kf_.Q_ << qx4,   0, qx3,   0,
+              0, qy4,   0, qy3,
+            qx3,   0, qx2,   0,
+              0, qy3,   0, qy2;
+
   // 3. Call the Kalman Filter predict() function
+  kf_.Predict();
   // 4. Call the Kalman Filter update() function
   //      with the most recent raw measurements_
-  
+  kf_.Update(measurement_pack.raw_measurements_);
+
   cout << "x_= " << kf_.x_ << endl;
   cout << "P_= " << kf_.P_ << endl;
 }
